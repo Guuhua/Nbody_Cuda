@@ -94,9 +94,9 @@ int main(const int argc, const char** argv) {
     // 将值存入设备中    
     cudaMemcpy(devp, buf, bytes, cudaMemcpyHostToDevice);
     // 并行计算
-    bodyForce<<<nBlocks, BLOCK_SIZE>>>(devp, dt, nBodies);
+    bodyForce<<<nBlocks, BLOCK_Size>>>(devp, dt, nBodies);
     // 将值从设备中取出来
-    cudaMencpy(buf, devp, bytes, cudaMemcpyDeviceToHost);
+    cudaMemcpy(buf, devp, bytes, cudaMemcpyDeviceToHost);
     for (int i = 0 ; i < nBodies; i++) { // integrate position
       p[i].x += p[i].vx*dt;
       p[i].y += p[i].vy*dt;
@@ -105,5 +105,5 @@ int main(const int argc, const char** argv) {
   }
   // 释放变量空间
   free(buf);
-  cudafree(devBuf);
+  cudaFree(devBuf);
 }

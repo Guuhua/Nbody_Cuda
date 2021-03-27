@@ -1,5 +1,5 @@
 /**
- * Nbody Cuda
+ * Nbody cuda
  * @author Juntao Chen
  */
 
@@ -14,7 +14,7 @@
 
 typedef struct{ float x, y, z, vx, vy, vz; } Body;
 
-// 初始化值为
+// 初始化变量
 void randomizeBodies(float *data, int n) {
   for (int i = 0; i < n; i++) {
     data[i] = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
@@ -44,7 +44,7 @@ __global__ void bodyForce(Body *p, float dt, int n) {
       locN[threadIdx.x].y = loc1.y;
       locN[threadIdx.x].z = loc1.z;
       
-      // 确保所有的值都被取出才能进行下一步计算，避免因时差导致取值错误
+      // 确保所有的值都被取出才能进行下一步计算，避免因时间差导致取值错误
       __syncthreads();
       
       for (int k = 0; k < BlockWidth; ++k) {
@@ -110,8 +110,9 @@ int main(const int argc, const char** argv) {
   }
   // 释放变量空间
   free(buf);
-  cudafree(devBuf);
+  cudaFree(devBuf);
   finish = clock();
   costtime = (float)(finish - start) / CLOCKS_PER_SEC;
-  printf("Cost time in CPU: %.4fs\n", costtime);
+  // 打印出运行时间
+  printf("Cost time in GPU: %.4fs\n", costtime);
 }

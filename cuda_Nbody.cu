@@ -6,6 +6,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define BlockWidth 16
 #define BlockSize 256
@@ -66,6 +67,10 @@ __global__ void bodyForce(Body *p, float dt, int n) {
 
 int main(const int argc, const char** argv) {
 
+  clock_t start, finish;
+  float costtime;
+  start = clock();
+
   int nBodies = 2<<11;
   int salt = 0;
   if (argc > 1) nBodies = 2<<atoi(argv[1]);
@@ -94,7 +99,7 @@ int main(const int argc, const char** argv) {
     // 将值存入设备中    
     cudaMemcpy(devp, buf, bytes, cudaMemcpyHostToDevice);
     // 并行计算
-    bodyForce<<<nBlocks, Block_Size>>>(devp, dt, nBodies);
+    bodyForce<<<nBlocks, BlockSize>>>(devp, dt, nBodies);
     // 将值从设备中取出来
     cudaMemcpy(buf, devp, bytes, cudaMemcpyDeviceToHost);
     for (int i = 0 ; i < nBodies; i++) { // integrate position
@@ -105,5 +110,8 @@ int main(const int argc, const char** argv) {
   }
   // 释放变量空间
   free(buf);
-  cudaFree(devBuf);
+  cudafree(devBuf);
+  finish = clock();
+  costtime = (float)(finish - start) / CLOCKS_PER_SEC;
+  printf("Cost time in CPU: %.4fs\n", costtime);
 }
